@@ -8,10 +8,4 @@ import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class MainApplication : Application() {
-
-    // for DataSotre
-//    val dataStore: DataStore<Preferences> by preferencesDataStore(
-//        name = "myDataStore"
-//    )
-}
+class MainApplication : Application() {}

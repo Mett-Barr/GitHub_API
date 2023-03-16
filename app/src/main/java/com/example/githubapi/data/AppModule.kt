@@ -3,14 +3,13 @@ package com.example.githubapi.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.example.githubapi.MainViewModel
+import com.example.githubapi.data.local.SettingsDataStore
+import com.example.githubapi.data.local.dataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 //@Module
 //@InstallIn(SingletonComponent::class)
