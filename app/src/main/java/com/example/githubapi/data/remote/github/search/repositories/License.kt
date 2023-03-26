@@ -1,4 +1,4 @@
-package com.example.githubapi.data.remote.githubapi.repositories
+package com.example.githubapi.data.remote.github.search.repositories
 
 data class License(
     val html_url: String,

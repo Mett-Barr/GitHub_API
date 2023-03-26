@@ -1,4 +1,4 @@
-package com.example.githubapi.theme
+package com.example.githubapi.ui.theme
 
 import android.app.Activity
 import android.os.Build
