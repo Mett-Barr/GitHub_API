@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -86,7 +87,9 @@ fun BoxScope.SearchBar(
 //
 //                viewModel.onSearchBarStateChange(false)
 //            }
-            .padding(8.dp)
+            .padding(8.dp),
+
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
         val queryText by viewModel.queryFlow.collectAsState()
@@ -118,36 +121,46 @@ fun BoxScope.SearchBar(
 
 
         AnimatedVisibility(visible = isAdvancedSearchMenuOpen) {
-            Column(
-                Modifier
+            Card (
+                modifier = Modifier
+                    .fillMaxWidth(),
+//                    .padding(8.dp),
+                shape = RoundedCornerShape(28.dp)
+
+            ) {
+
+                Column(
+                    Modifier
 //                    .background(Color.Yellow)
 //                    .align(Alignment.CenterHorizontally)
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .padding(10.dp), verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                TextFieldDropdownMenu<Oauth>(
-                    label = "Oauth",
-                    selectedOptionText = viewModel.oauth.value.toString(),
-                    select = { viewModel.oauth.value = it }
-                )
-                TextFieldDropdownMenu<Sort>(
-                    label = "Sort",
-                    selectedOptionText = viewModel.sort.value.toString(),
-                    select = { viewModel.sort.value = it }
-                )
-                TextFieldDropdownMenu<Order>(
-                    label = "Order",
-                    selectedOptionText = viewModel.order.value.toString(),
-                    select = { viewModel.order.value = it }
-                )
-                TextFieldDropdownMenu<PerPage>(
-                    label = "Per Page",
-                    selectedOptionText = viewModel.perPage.value.toString(),
-                    select = { viewModel.perPage.value = it }
-                )
+                        .fillMaxWidth()
+//                        .padding(8.dp)
+//                        .clip(RoundedCornerShape(8.dp))
+                        .padding(bottom = 20.dp, top = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TextFieldDropdownMenu<Oauth>(
+                        label = "Oauth",
+                        selectedOptionText = viewModel.oauth.value.toString(),
+                        select = { viewModel.oauth.value = it }
+                    )
+                    TextFieldDropdownMenu<Sort>(
+                        label = "Sort",
+                        selectedOptionText = viewModel.sort.value.toString(),
+                        select = { viewModel.sort.value = it }
+                    )
+                    TextFieldDropdownMenu<Order>(
+                        label = "Order",
+                        selectedOptionText = viewModel.order.value.toString(),
+                        select = { viewModel.order.value = it }
+                    )
+                    TextFieldDropdownMenu<PerPage>(
+                        label = "Per Page",
+                        selectedOptionText = viewModel.perPage.value.toString(),
+                        select = { viewModel.perPage.value = it }
+                    )
+                }
             }
         }
 
@@ -372,6 +385,9 @@ fun SearchBox(
 
     val focusManager = LocalFocusManager.current
 
+    val isKeyboardOpen by keyboardAsState()
+
+
     Card(
         onClick = {
             onSearchingStateChange(true)
@@ -484,6 +500,7 @@ fun SearchBox(
                 }
             }
 
+//            Crossfade(targetState = isKeyboardOpen) {
             Crossfade(targetState = isSearchBarExpanded) {
                 if (it) {
 //                    Icon(
@@ -563,4 +580,11 @@ fun SimpleTextField(
             }
         }
     )
+}
+
+
+@Composable
+fun keyboardAsState(): State<Boolean> {
+    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    return rememberUpdatedState(isImeVisible)
 }

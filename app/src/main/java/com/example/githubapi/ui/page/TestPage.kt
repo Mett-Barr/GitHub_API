@@ -1,18 +1,25 @@
 package com.example.githubapi.ui.page
 
 import android.util.Log
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
@@ -21,6 +28,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.rememberAsyncImagePainter
 import com.example.githubapi.MainViewModel
+import com.example.githubapi.R
 //import com.example.githubapi.RateLimitException
 import com.example.githubapi.data.remote.github.search.repositories.Item
 import com.example.githubapi.data.remote.github.search.repositories.RateLimitException
@@ -43,6 +51,9 @@ fun TestPaging(
     var needResearching by remember {
         mutableStateOf(false)
     }
+
+
+    val listState = rememberLazyListState()
 
     val searchText by viewModel.queryFlow.collectAsState()
 
@@ -95,8 +106,8 @@ fun TestPaging(
 //        SearchBar()
 
         LazyColumn(
-            Modifier
-//            modifier
+//            Modifier
+            modifier
                 .fillMaxSize()
 //                .padding(paddingValues)
                 .clickable { pagingItems.refresh() },
@@ -299,3 +310,31 @@ fun LazyListScope.displayLoadState(pagingItems: LazyPagingItems<Item>) {
 
 
 }
+
+
+@Preview
+@Composable
+fun TestBlur() {
+
+    var boo by remember {
+        mutableStateOf(false)
+    }
+
+    val blur = animateDpAsState(targetValue = if (boo) 0.dp else 10.dp)
+
+    Icon(
+        painter = painterResource(id = R.drawable.search_fill0_wght400_grad0_opsz48),
+        contentDescription = "",
+        modifier = Modifier
+            .size(100.dp)
+            .blur(blur.value)
+    )
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(2000)
+            boo = !boo
+        }
+    }
+}
+

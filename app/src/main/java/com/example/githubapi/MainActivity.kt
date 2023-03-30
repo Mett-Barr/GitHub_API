@@ -1,6 +1,7 @@
 package com.example.githubapi
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import coil.compose.rememberAsyncImagePainter
+import com.example.githubapi.data.local.room.SearchHistory
+import com.example.githubapi.data.local.room.SearchHistoryDao
 import com.example.githubapi.data.remote.github.search.repositories.Item
 import com.example.githubapi.ui.component.SearchBar
 import com.example.githubapi.ui.page.SearchPage
@@ -28,33 +34,47 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+
+    // testing
+    @Inject
+    lateinit var searchHistoryDao: SearchHistoryDao
+
+//    private val viewModel: MainViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
 //        setContentView(R.layout.activity_main)
 
+
+
+        roomTest()
+
+
         setContent {
+
             MainTheme {
+//                Spacer(modifier = Modifier
+//                    .fillMaxSize()
+//                    .background(Color.Gray))
+//
+//            }
+
+////                Spacer(modifier = Modifier
+////                    .fillMaxSize()
+////                    .background(Color.Gray))
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-//                    Scaffold(
-//                        topBar = { SearchBar() }
-//                    ) {
-////                        it
-////                        SearchBar()
-////                        it
-//                        TestPaging(paddingValues = it)
-//                    }
-
                     SearchPage()
                 }
             }
@@ -123,6 +143,22 @@ class MainActivity : AppCompatActivity() {
 //
         }
     }
+
+    private fun LifecycleOwner.roomTest() {
+        // 使用协程在后台线程执行数据库操作
+        lifecycleScope.launch {
+            // 插入一个新的搜索历史记录
+            val searchHistory = SearchHistory(searchTerm = "test search", lastUsed = System.currentTimeMillis())
+            searchHistoryDao.insert(searchHistory)
+
+            // 获取所有搜索历史记录
+            val searchHistories = searchHistoryDao.getAll()
+            searchHistories.forEach { history ->
+                Log.d("room","Search history: ${history.searchTerm}, Last used: ${history.lastUsed}")
+            }
+        }
+    }
+
 }
 
 @Composable

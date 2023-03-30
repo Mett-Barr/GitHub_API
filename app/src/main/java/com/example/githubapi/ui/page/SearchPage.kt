@@ -4,15 +4,15 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.githubapi.MainViewModel
@@ -22,8 +22,22 @@ import com.example.githubapi.ui.component.SearchBar
 fun SearchPage(
     viewModel: MainViewModel = viewModel(),
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        TestPaging(modifier = Modifier.padding(top = 72.dp))
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .statusBarsPadding()) {
+//        TestPaging(modifier = Modifier)
+
+        LazyColumn(
+            contentPadding = PaddingValues(top = 72.dp)
+        ) {
+            items(100) {
+                Spacer(modifier = Modifier
+                    .padding(10.dp)
+                    .background(Color.Gray)
+                    .fillMaxWidth()
+                    .size(100.dp))
+            }
+        }
 
         /** Mask */
 //        val isSearchBarExpanded by viewModel.isSearchBarExpanded
