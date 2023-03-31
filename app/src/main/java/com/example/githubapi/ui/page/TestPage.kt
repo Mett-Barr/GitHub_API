@@ -41,8 +41,8 @@ import kotlinx.coroutines.flow.debounce
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TestPaging(
-    viewModel: MainViewModel = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: MainViewModel = viewModel()
 //    paddingValues: PaddingValues
 ) {
 
@@ -65,13 +65,25 @@ fun TestPaging(
         Log.d("!!!", "itemCount = " + pagingItems.itemCount.toString())
     }
 
+//    LaunchedEffect(viewModel.lastSearch) {
+//        pagingItems.refresh()
+//    }
+
     LaunchedEffect(searchText) {
         viewModel.queryFlow
             .debounce(2000L) // 2 seconds debounce
             .collect { searchText ->
-                viewModel.searchRepo()
-                pagingItems.refresh()
+                Log.d("!!!", "lastSearch = ${viewModel.lastSearch}")
+                if (searchText.isNotBlank()) {
+                    viewModel.searchRepo()
+                    pagingItems.refresh()
+                }
             }
+    }
+
+    LaunchedEffect(viewModel.lastSearch) {
+        Log.d("!!!", "lastSearch = ${viewModel.lastSearch}")
+        pagingItems.refresh()
     }
 
 
@@ -286,11 +298,11 @@ fun LazyListScope.displayLoadState(pagingItems: LazyPagingItems<Item>) {
                     modifier = Modifier.padding(8.dp)
                 )
 
-                Log.d("!!!", "refresh is LoadState.Error: ${errorState.error}")
-                Log.d(
-                    "!!!",
-                    "refresh is LoadState.Error: ${errorState.error is RateLimitException}"
-                )
+//                Log.d("!!!", "refresh is LoadState.Error: ${errorState.error}")
+//                Log.d(
+//                    "!!!",
+//                    "refresh is LoadState.Error: ${errorState.error is RateLimitException}"
+//                )
             }
         }
         pagingItems.loadState.append is LoadState.Error -> {
@@ -301,8 +313,8 @@ fun LazyListScope.displayLoadState(pagingItems: LazyPagingItems<Item>) {
                     modifier = Modifier.padding(8.dp)
                 )
 
-                Log.d("!!!", "append is LoadState.Error: ${errorState.error}")
-                Log.d("!!!", "append is LoadState.Error: ${errorState.error is RateLimitException}")
+//                Log.d("!!!", "append is LoadState.Error: ${errorState.error}")
+//                Log.d("!!!", "append is LoadState.Error: ${errorState.error is RateLimitException}")
 
             }
         }

@@ -24,7 +24,7 @@ class RepoPagingSource(
 
     override fun getRefreshKey(state: PagingState<Int, Item>): Int? {
 
-        Log.d("!!!", "getRefreshKey: $state")
+//        Log.d("!!!", "getRefreshKey: $state")
 
         return null
 //        return state.anchorPosition
@@ -49,13 +49,13 @@ class RepoPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item> {
         val page = params.key ?: 1
 
-        Log.d("!!!", "load: page = $page")
+//        Log.d("!!!", "load: page = $page")
 
         return try {
             val response = RetrofitClient.searchRepositories(query = query, page = page, isOauthEnabled = isOauthEnabled, perPage = perPage)
 //            val response = RetrofitClient.pagingTest(page)
 
-            Log.d("!!!", response.toString())
+//            Log.d("!!!", response.toString())
 
             rateLimitCheck(response)
 

@@ -33,6 +33,7 @@ import com.example.githubapi.ui.theme.MainTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var searchHistoryDao: SearchHistoryDao
 
-//    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +57,8 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        roomTest()
+//        roomTest()
+//        testRoomLiveData()
 
 
         setContent {
@@ -144,6 +146,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    // testing
     private fun LifecycleOwner.roomTest() {
         // 使用协程在后台线程执行数据库操作
         lifecycleScope.launch {
@@ -156,6 +160,49 @@ class MainActivity : AppCompatActivity() {
             searchHistories.forEach { history ->
                 Log.d("room","Search history: ${history.searchTerm}, Last used: ${history.lastUsed}")
             }
+        }
+    }
+    private fun testRoomLiveData() {
+        lifecycleScope.launch {
+            // 插入示例数据
+            viewModel.insertSearchHistory("Test Search 1")
+            Log.d("RoomLiveDataTest", "Inserted Test Search 1")
+            printSearchHistories()
+
+            // 等待一会儿，然后插入另一个搜索历史记录
+            delay(3000)
+            viewModel.insertSearchHistory("Test Search 2")
+            Log.d("RoomLiveDataTest", "Inserted Test Search 2")
+            printSearchHistories()
+
+            // 更新示例数据
+            delay(3000)
+            viewModel.searchHistories.value?.firstOrNull()?.let { firstSearchHistory ->
+                viewModel.updateSearchHistory(firstSearchHistory.copy(searchTerm = "Updated Search Term"))
+                Log.d("RoomLiveDataTest", "Updated first search history")
+            }
+            printSearchHistories()
+
+            // 删除示例数据
+            delay(3000)
+            viewModel.searchHistories.value?.firstOrNull()?.let { firstSearchHistory ->
+                viewModel.deleteSearchHistory(firstSearchHistory.id)
+                Log.d("RoomLiveDataTest", "Deleted first search history")
+            }
+            printSearchHistories()
+
+            // 删除所有搜索历史记录
+            delay(3000)
+            viewModel.deleteAllSearchHistories()
+            Log.d("RoomLiveDataTest", "Deleted all search histories")
+            printSearchHistories()
+        }
+    }
+    private suspend fun printSearchHistories() {
+        val searchHistories = viewModel.getAllSearchHistories()
+        Log.d("RoomLiveDataTest", "Search histories changed:")
+        searchHistories.forEach {
+            Log.d("RoomLiveDataTest", "${it.id}: ${it.searchTerm}, ${it.lastUsed}")
         }
     }
 

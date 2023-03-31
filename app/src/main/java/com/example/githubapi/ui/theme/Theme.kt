@@ -16,14 +16,14 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
+    primary = DarkPrimary,
+    secondary = LightPrimary,
     tertiary = Pink80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
+    primary = LightPrimary,
+    secondary = DarkPrimary,
     tertiary = Pink40
 
     /* Other default colors to override
@@ -52,13 +52,13 @@ fun MainTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-//    val view = LocalView.current
-//    if (!view.isInEditMode) {
-//        SideEffect {
-//            (view.context as Activity).window.statusBarColor = colorScheme.primary.toArgb()
-//            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = darkTheme
-//        }
-//    }
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+//            (view.context as Activity).window.statusBarColor = colorScheme.surface.toArgb()
+            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = !darkTheme
+        }
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,
