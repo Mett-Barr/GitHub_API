@@ -1,5 +1,6 @@
 package com.example.githubapi
 
+import android.content.res.Resources.Theme
 import android.util.Log
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.input.TextFieldValue
@@ -35,8 +36,26 @@ class MainViewModel @Inject constructor(
 
     /** UI State */
     // custom settings
-    var isComposeMode by mutableStateOf(true)
-        private set
+    val isComposeMode = MutableLiveData(false)
+    //    var isComposeMode by mutableStateOf(true)
+//        private set
+    fun onComposeModeChange(boo: Boolean) {
+        isComposeMode.value = boo
+        viewModelScope.launch {
+            dataStore.saveComposeMode(boo)
+        }
+    }
+
+    val themeMode = MutableLiveData(ThemeMode.SYSTEM_DEFAULT)
+    fun onThemeModeChange(mode: ThemeMode) {
+        themeMode.value = mode
+        viewModelScope.launch {
+            dataStore.saveThemeMode(mode.name)
+        }
+    }
+
+
+
     var isSearchBarExpanded by mutableStateOf(false)
         private set
     fun onSearchBarStateChange(boo: Boolean) {
@@ -44,7 +63,7 @@ class MainViewModel @Inject constructor(
     }
 
     // navigation
-    val route = MutableStateFlow<MainRoute>(MainRoute.Search)
+    val route = MutableStateFlow<MainRoute>(MainRoute.Settings)
 
     fun navigate(route: MainRoute) {
         this.route.value = route
@@ -60,11 +79,13 @@ class MainViewModel @Inject constructor(
     fun handleLastSearch() {
         if (lastSearch.isNotBlank()) {
             viewModelScope.launch {
-                val existingSearchHistory = searchHistoryDao.getSearchHistoryBySearchTerm(lastSearch)
+                val existingSearchHistory =
+                    searchHistoryDao.getSearchHistoryBySearchTerm(lastSearch)
 
                 if (existingSearchHistory != null) {
                     // 更新現有的搜索歷史
-                    val updatedSearchHistory = existingSearchHistory.copy(lastUsed = System.currentTimeMillis())
+                    val updatedSearchHistory =
+                        existingSearchHistory.copy(lastUsed = System.currentTimeMillis())
                     updateSearchHistory(updatedSearchHistory)
                 } else {
                     // 插入新的搜索歷史
@@ -79,7 +100,12 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            isComposeMode = dataStore.getComposeMode()
+            isComposeMode.value = dataStore.getComposeMode()
+            themeMode.value = when (dataStore.getThemeMode()) {
+                ThemeMode.LIGHT.name -> ThemeMode.LIGHT
+                ThemeMode.DARK.name -> ThemeMode.DARK
+                else -> ThemeMode.SYSTEM_DEFAULT
+            }
 
 //            gitRepo.clear()
 //            RetrofitClient.test2()?.items?.let { gitRepo.addAll(it) }
@@ -258,14 +284,14 @@ class MainViewModel @Inject constructor(
     }
 
 
-
     /** Room */
     val searchHistories: LiveData<List<SearchHistory>> = searchHistoryDao.getAllLiveData()
 
     suspend fun getAllSearchHistories() = searchHistoryDao.getAll()
 
     fun insertSearchHistory(searchTerm: String) = viewModelScope.launch {
-        val searchHistory = SearchHistory(searchTerm = searchTerm, lastUsed = System.currentTimeMillis())
+        val searchHistory =
+            SearchHistory(searchTerm = searchTerm, lastUsed = System.currentTimeMillis())
         searchHistoryDao.insert(searchHistory)
     }
 
@@ -290,6 +316,7 @@ class MainViewModel @Inject constructor(
             bookmarksList.any { it.fullName == fullName }
         }
     }
+
     suspend fun getRepo(fullName: String): GetRepoItem? {
         // 如果缓存中存在此仓库，直接从缓存获取
         if (repoCache.containsKey(fullName)) {
@@ -303,7 +330,10 @@ class MainViewModel @Inject constructor(
                     Log.d("!!!", "getRepo: Successful request. Response body: ${response.body()}")
                     response.body()
                 } else {
-                    Log.d("!!!", "getRepo: Request failed. Response code: ${response.code()}, Response message: ${response.message()}")
+                    Log.d(
+                        "!!!",
+                        "getRepo: Request failed. Response code: ${response.code()}, Response message: ${response.message()}"
+                    )
                     null
                 }
             } catch (e: Exception) {
@@ -312,6 +342,7 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
     suspend fun getAllBookmarks() = bookmarkDao.getAllBookmarks()
 
     fun insertBookmark(fullName: String) = viewModelScope.launch {
@@ -339,6 +370,10 @@ class MainViewModel @Inject constructor(
     init {
 
     }
+}
+
+enum class ThemeMode{
+    LIGHT, DARK, SYSTEM_DEFAULT
 }
 
 

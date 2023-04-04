@@ -20,6 +20,7 @@ import com.example.githubapi.R
 import com.example.githubapi.ui.page.BookmarkPage
 import com.example.githubapi.ui.page.RepositoryPage
 import com.example.githubapi.ui.page.SearchPage
+import com.example.githubapi.ui.page.SettingsPage
 
 const val REPOSITORY = "Repository"
 
@@ -182,7 +183,7 @@ fun MainNavigation(
             when(it) {
                 MainRoute.Search -> SearchPage()
                 MainRoute.BookMarks -> BookmarkPage()
-                MainRoute.Settings -> {}
+                MainRoute.Settings -> SettingsPage()
                 is MainRoute.Repository -> RepositoryPage(url = it.url) {
                     viewModel.route.value = backRoute
                 }

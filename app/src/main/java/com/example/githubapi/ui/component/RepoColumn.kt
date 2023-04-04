@@ -16,6 +16,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.example.githubapi.MainViewModel
 import com.example.githubapi.data.remote.github.search.repositories.Item
+import com.example.githubapi.ui.page.displayLoadState
 import kotlinx.coroutines.delay
 
 @Composable
@@ -79,5 +80,7 @@ fun SearchRepoColumn(
                     })
             }
         }
+
+        displayLoadState(pagingItems)
     }
 }

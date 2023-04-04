@@ -5,7 +5,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.githubapi.ThemeMode
 import com.example.githubapi.data.remote.github.ConverterType
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -52,6 +54,8 @@ class SettingsDataStore @Inject constructor(private val dataStore: DataStore<Pre
     companion object {
         private val IS_COMPOSE_MODE = booleanPreferencesKey("is_compose_mode")
         private val IS_MOSHI_CONVERTER = booleanPreferencesKey("is_moshi_converter")
+
+        private val THEME_MODE = stringPreferencesKey("theme_mode")
     }
 
     suspend fun getComposeMode(): Boolean {
@@ -62,6 +66,17 @@ class SettingsDataStore @Inject constructor(private val dataStore: DataStore<Pre
     suspend fun saveComposeMode(isComposeMode: Boolean) {
         dataStore.edit { preferences ->
             preferences[IS_COMPOSE_MODE] = isComposeMode
+        }
+    }
+
+    suspend fun getThemeMode(): String {
+        val preferences = dataStore.data.first()
+        return preferences[THEME_MODE] ?: ThemeMode.SYSTEM_DEFAULT.name
+    }
+
+    suspend fun saveThemeMode(mode: String) {
+        dataStore.edit { preferences ->
+            preferences[THEME_MODE] = mode
         }
     }
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
@@ -25,7 +26,6 @@ import androidx.paging.compose.itemsIndexed
 import com.example.githubapi.MainViewModel
 import com.example.githubapi.R
 import com.example.githubapi.data.remote.github.search.repositories.Item
-import com.example.githubapi.ui.component.RepoCard
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.debounce
 
@@ -278,18 +278,44 @@ fun LazyListScope.displayLoadState(pagingItems: LazyPagingItems<Item>) {
 
     when {
         pagingItems.loadState.refresh is LoadState.Loading -> {
-            item { Text(text = "正在请求...") }
+            item {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "正在請求...", modifier = Modifier.fillMaxWidth().align(Alignment.Center))
+                }
+
+                //        item {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .height(48.dp)
+                            .padding(8.dp)
+                    )
+                }
+//        }
+
+            }
         }
         pagingItems.loadState.append is LoadState.Loading -> {
-            item { CircularProgressIndicator(modifier = Modifier.fillMaxWidth().padding(8.dp)) }
+            item {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+            }
         }
         pagingItems.loadState.refresh is LoadState.Error -> {
             val errorState = pagingItems.loadState.refresh as LoadState.Error
             item {
-                Text(
-                    text = "请求失败: ${errorState.error.localizedMessage}",
-                    modifier = Modifier.padding(8.dp)
-                )
+//                Text(
+//                    text = "請求失敗: ${errorState.error.localizedMessage}",
+//                    modifier = Modifier.padding(8.dp)
+//                )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "請求失敗: ${errorState.error.localizedMessage}", modifier = Modifier.fillMaxWidth().align(Alignment.Center))
+                }
+
 
 //                Log.d("!!!", "refresh is LoadState.Error: ${errorState.error}")
 //                Log.d(
@@ -301,10 +327,14 @@ fun LazyListScope.displayLoadState(pagingItems: LazyPagingItems<Item>) {
         pagingItems.loadState.append is LoadState.Error -> {
             val errorState = pagingItems.loadState.append as LoadState.Error
             item {
-                Text(
-                    text = "加载更多失败: ${errorState.error.localizedMessage}",
-                    modifier = Modifier.padding(8.dp)
-                )
+//                Text(
+//                    text = "載入更多失敗: ${errorState.error.localizedMessage}",
+//                    modifier = Modifier.padding(8.dp)
+//                )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "載入更多失敗: ${errorState.error.localizedMessage}", modifier = Modifier.fillMaxWidth().align(Alignment.Center))
+                }
+
 
 //                Log.d("!!!", "append is LoadState.Error: ${errorState.error}")
 //                Log.d("!!!", "append is LoadState.Error: ${errorState.error is RateLimitException}")
