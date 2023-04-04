@@ -1,4 +1,4 @@
-package com.example.githubapi.data.local.room
+package com.example.githubapi.data.local.room.history
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

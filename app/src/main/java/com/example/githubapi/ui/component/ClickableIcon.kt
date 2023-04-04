@@ -12,18 +12,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun ClickableIcon(
+    modifier: Modifier = Modifier,
     painter: Painter,
     tint: Color = LocalContentColor.current,
     contentDescription: String? = null,
     onClick: (() -> Unit)? = null
 ) {
 
-    val modifier = if (onClick != null) {
+    val modifier2 = if (onClick != null) {
         Modifier.clickable(
             indication = rememberRipple(bounded = false, radius = 20.dp),
             interactionSource = remember { MutableInteractionSource() }
@@ -32,8 +32,8 @@ fun ClickableIcon(
 
     Icon(
         painter = painter, contentDescription = contentDescription,
-        modifier = Modifier
-            .then(modifier)
+        modifier = modifier
+            .then(modifier2)
             .padding(12.dp)
             .size(24.dp),
         tint = tint

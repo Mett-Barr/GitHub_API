@@ -1,5 +1,6 @@
 package com.example.githubapi.data.remote.github
 
+import com.example.githubapi.data.remote.github.getrepo.json.GetRepoItem
 import com.example.githubapi.data.remote.github.search.repositories.GitHubRepositories
 import com.example.githubapi.data.remote.github.search.user.GitHubUsers
 import com.example.githubapi.data.remote.github.users.GitHubUser
@@ -21,6 +22,12 @@ interface GitHubApiService {
         @Query("page") page: Int? = null
     ): Response<GitHubRepositories>
 
+    @GET("repos/{owner}/{repo}")
+    suspend fun getRepo(
+        @Path("owner") owner: String,
+        @Path("repo") repo: String
+    ): Response<GetRepoItem>
+
 //    @GET("users/{username}")
 //    suspend fun getUser(@Path("username") username: String): Call<GitHubUsers>
 
@@ -38,11 +45,11 @@ interface GitHubApiService {
     ): Response<GitHubUsers>
 
 
-    @GET("users/{username}")
-    suspend fun getUser(
-        @Header("accept") accept: String = "application/vnd.github+json",
-        @Path("username") username: String
-    ): Response<GitHubUser>
+//    @GET("users/{username}")
+//    suspend fun getUser(
+//        @Header("accept") accept: String = "application/vnd.github+json",
+//        @Path("username") username: String
+//    ): Response<GitHubUser>
 }
 
 enum class Oauth(private val description: String) {

@@ -20,7 +20,7 @@ class RepoPagingSource(
     private val order: String?,
     private val perPage: Int?,
 
-) : PagingSource<Int, Item>() {
+    ) : PagingSource<Int, Item>() {
 
     override fun getRefreshKey(state: PagingState<Int, Item>): Int? {
 
@@ -33,7 +33,8 @@ class RepoPagingSource(
     private fun rateLimitCheck(response: Response<GitHubRepositories>) {
         if (response.code() == 403) {
             val remainingRequests = response.headers()["x-ratelimit-remaining"]?.toIntOrNull() ?: -1
-            val rateLimitExceeded = response.errorBody()?.string()?.contains("API rate limit exceeded") ?: false
+            val rateLimitExceeded =
+                response.errorBody()?.string()?.contains("API rate limit exceeded") ?: false
 
             if (remainingRequests == 0 || rateLimitExceeded) {
                 val resetTime = response.headers()["x-ratelimit-reset"]?.toLongOrNull() ?: 0L
@@ -52,7 +53,9 @@ class RepoPagingSource(
 //        Log.d("!!!", "load: page = $page")
 
         return try {
-            val response = RetrofitClient.searchRepositories(query = query, page = page, isOauthEnabled = isOauthEnabled, perPage = perPage)
+            val response = RetrofitClient.searchRepositories(
+                query = query, page = page, isOauthEnabled = isOauthEnabled, perPage = perPage, sort = sort, order = order
+            )
 //            val response = RetrofitClient.pagingTest(page)
 
 //            Log.d("!!!", response.toString())
@@ -62,7 +65,11 @@ class RepoPagingSource(
             if (response.isSuccessful) {
                 val items = response.body()?.items ?: emptyList()
                 val nextPage = if (items.isEmpty()) null else page + 1
-                LoadResult.Page(items, prevKey = if (page == 1) null else page - 1, nextKey = nextPage)
+                LoadResult.Page(
+                    items,
+                    prevKey = if (page == 1) null else page - 1,
+                    nextKey = nextPage
+                )
             } else {
                 LoadResult.Error(HttpException(response))
             }
@@ -118,4 +125,5 @@ class RepoPagingSource(
 //    }
 }
 
-class RateLimitException(val retryDelay: Long) : IOException("Rate limit exceeded. Retry after $retryDelay seconds.")
+class RateLimitException(val retryDelay: Long) :
+    IOException("Rate limit exceeded. Retry after $retryDelay seconds.")

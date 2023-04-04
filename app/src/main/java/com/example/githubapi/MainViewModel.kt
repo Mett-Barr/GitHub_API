@@ -1,10 +1,7 @@
 package com.example.githubapi
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.*
 import androidx.paging.Pager
@@ -12,12 +9,16 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.githubapi.data.local.SettingsDataStore
-import com.example.githubapi.data.local.room.SearchHistory
-import com.example.githubapi.data.local.room.SearchHistoryDao
+import com.example.githubapi.data.local.room.bookmark.Bookmark
+import com.example.githubapi.data.local.room.bookmark.BookmarkDao
+import com.example.githubapi.data.local.room.history.SearchHistory
+import com.example.githubapi.data.local.room.history.SearchHistoryDao
 import com.example.githubapi.data.remote.github.*
+import com.example.githubapi.data.remote.github.getrepo.json.GetRepoItem
 import com.example.githubapi.data.remote.github.search.repositories.Item
 import com.example.githubapi.data.remote.github.search.repositories.RateLimitException
 import com.example.githubapi.data.remote.github.search.repositories.RepoPagingSource
+import com.example.githubapi.ui.navigation.MainRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -27,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val dataStore: SettingsDataStore,
-    private val searchHistoryDao: SearchHistoryDao
+    private val searchHistoryDao: SearchHistoryDao,
+    private val bookmarkDao: BookmarkDao
 //    private val dataStore: SettingsDataStore
 ) : ViewModel() {
 
@@ -39,6 +41,13 @@ class MainViewModel @Inject constructor(
         private set
     fun onSearchBarStateChange(boo: Boolean) {
         isSearchBarExpanded = boo
+    }
+
+    // navigation
+    val route = MutableStateFlow<MainRoute>(MainRoute.Search)
+
+    fun navigate(route: MainRoute) {
+        this.route.value = route
     }
 
 //    fun onSearchBarStateChanged() {
@@ -72,7 +81,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             isComposeMode = dataStore.getComposeMode()
 
-            gitRepo.clear()
+//            gitRepo.clear()
 //            RetrofitClient.test2()?.items?.let { gitRepo.addAll(it) }
 //            gitRepo = RetrofitClient.test2()?.items
 
@@ -89,8 +98,8 @@ class MainViewModel @Inject constructor(
 //    }
     fun test() {
         viewModelScope.launch {
-            isComposeMode = !isComposeMode
-            dataStore.saveComposeMode(isComposeMode)
+//            isComposeMode = !isComposeMode
+//            dataStore.saveComposeMode(isComposeMode)
         }
     }
 
@@ -117,12 +126,14 @@ class MainViewModel @Inject constructor(
 
     var lastSearch by mutableStateOf("Kotlin")
 
+    var url = MutableStateFlow("")
+
 
     fun searchRepo(
     ) {
 
         if (queryFlow.value.isNotBlank()) {
-            Log.d("!!!", "searchRepo: text = ${queryFlow.value}")
+//            Log.d("!!!", "searchRepo: text = ${queryFlow.value}")
 
             pagingData = Pager(
                 config = PagingConfig(pageSize = perPage.value?.getValue() ?: 30),
@@ -270,6 +281,64 @@ class MainViewModel @Inject constructor(
         searchHistoryDao.update(searchHistory)
     }
 
+    // bookmark
+    val bookmarks: LiveData<List<Bookmark>> = bookmarkDao.getAllBookmarks()
+    private val repoCache = mutableMapOf<String, GetRepoItem?>()
+
+    fun isBookmarkExists(fullName: String): LiveData<Boolean> {
+        return bookmarks.map { bookmarksList ->
+            bookmarksList.any { it.fullName == fullName }
+        }
+    }
+    suspend fun getRepo(fullName: String): GetRepoItem? {
+        // 如果缓存中存在此仓库，直接从缓存获取
+        if (repoCache.containsKey(fullName)) {
+            return repoCache[fullName]
+        } else {
+            return try {
+                val response = RetrofitClient.getUser(fullName)
+                if (response.isSuccessful) {
+                    // 将新获取的数据添加到缓存中
+                    repoCache[fullName] = response.body()
+                    Log.d("!!!", "getRepo: Successful request. Response body: ${response.body()}")
+                    response.body()
+                } else {
+                    Log.d("!!!", "getRepo: Request failed. Response code: ${response.code()}, Response message: ${response.message()}")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.d("!!!", "getRepo: Exception occurred: ${e.message}")
+                null
+            }
+        }
+    }
+    suspend fun getAllBookmarks() = bookmarkDao.getAllBookmarks()
+
+    fun insertBookmark(fullName: String) = viewModelScope.launch {
+        val bookmark = Bookmark(fullName = fullName)
+        bookmarkDao.insertBookmark(bookmark)
+    }
+
+    fun deleteBookmark(id: Int) = viewModelScope.launch {
+        bookmarkDao.deleteBookmarkById(id)
+    }
+
+    fun deleteBookmarkByFullName(fullName: String) = viewModelScope.launch {
+        bookmarkDao.deleteByFullName(fullName)
+    }
+
+    fun deleteAllBookmarks() = viewModelScope.launch {
+        bookmarkDao.deleteAllBookmarks()
+    }
+
+    suspend fun getBookmarkById(bookmarkId: Int) = bookmarkDao.getBookmarkById(bookmarkId)
+
+//    suspend fun getBookmarkByUrl(url: String) = bookmarkDao.getBookmarkByUrl(url)
+
+
+    init {
+
+    }
 }
 
 

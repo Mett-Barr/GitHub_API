@@ -149,7 +149,10 @@ inline fun <reified T : Enum<T>> TextFieldDropdownMenu(
             onValueChange = {},
             label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+//                focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+//                focusedLabelColor = MaterialTheme.colorScheme.secondary
+            ),
         )
         ExposedDropdownMenu(
             expanded = expanded && forceClose,

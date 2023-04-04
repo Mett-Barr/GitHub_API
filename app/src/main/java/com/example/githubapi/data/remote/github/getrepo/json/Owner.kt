@@ -1,8 +1,5 @@
-package com.example.githubapi.data.remote.github.search.repositories
+package com.example.githubapi.data.remote.github.getrepo.json
 
-import com.squareup.moshi.JsonClass
-
-@JsonClass(generateAdapter = true)
 data class Owner(
     val avatar_url: String,
     val events_url: String,

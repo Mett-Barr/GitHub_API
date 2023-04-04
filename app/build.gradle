@@ -56,12 +56,12 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
-    implementation "androidx.activity:activity-ktx:1.6.1"
+    implementation "androidx.activity:activity-ktx:1.7.0"
 
 
 //    compose
     implementation platform('androidx.compose:compose-bom:2023.01.00')
-    implementation 'androidx.activity:activity-compose:1.6.1'
+    implementation 'androidx.activity:activity-compose:1.7.0'
     implementation 'androidx.compose.foundation:foundation:1.5.0-alpha01'
 //    implementation "androidx.compose.material:material"
     implementation 'androidx.compose.material3:material3'
@@ -69,6 +69,10 @@ dependencies {
     implementation "androidx.compose.ui:ui"
     implementation "androidx.compose.ui:ui-tooling-preview"
     debugImplementation "androidx.compose.ui:ui-tooling"
+
+    // Compose Navigation
+    implementation "androidx.navigation:navigation-compose:2.5.3"
+
 
     implementation "androidx.compose.material:material"
 
@@ -100,6 +104,7 @@ dependencies {
 //     Hilt dependencies
     implementation "com.google.dagger:hilt-android:2.45"
     kapt "com.google.dagger:hilt-android-compiler:2.45"
+    implementation 'androidx.hilt:hilt-navigation-compose:1.1.0-alpha01'
 
     //    UI
     implementation "io.coil-kt:coil-compose:2.1.0"
@@ -113,7 +118,7 @@ dependencies {
 
 
     // viewModel for Compose
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
 
 
     // LiveData

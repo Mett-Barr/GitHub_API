@@ -1,38 +1,31 @@
 package com.example.githubapi.ui.page
 
+//import com.example.githubapi.RateLimitException
 import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
-import coil.compose.rememberAsyncImagePainter
 import com.example.githubapi.MainViewModel
 import com.example.githubapi.R
-//import com.example.githubapi.RateLimitException
 import com.example.githubapi.data.remote.github.search.repositories.Item
-import com.example.githubapi.data.remote.github.search.repositories.RateLimitException
-import com.example.githubapi.ui.component.SearchBar
+import com.example.githubapi.ui.component.RepoCard
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.debounce
 
@@ -129,14 +122,10 @@ fun TestPaging(
             contentPadding = PaddingValues(top = 72.dp)
         ) {
 
-//            item {
-//                Button(onClick = {
-////                CoroutineScope(Dispatchers.Main).launch {
-//                    pagingItems.refresh()
-////                }
-//                }) {
-//                    Text(text = "refresh")
-//                }
+
+            // test
+//            items(50) {
+//                CardSample()
 //            }
 
             itemsIndexed(pagingItems) { index, it ->
@@ -163,30 +152,34 @@ fun TestPaging(
                     } else {
                         // 显示repository项
 
-                        Card(Modifier.padding(20.dp)) {
-                            Row {
-                                Text(text = (index + 1).toString())
-                                Image(
-                                    painter = rememberAsyncImagePainter(it.owner.avatar_url),
-                                    contentDescription = it.owner.url,
-                                    modifier = Modifier
-                                        .size(50.dp)
-                                        .clip(
-                                            RoundedCornerShape(
-                                                if (it.owner.type == "Organization") 15
-                                                else 100
-                                            )
-                                        )
-                                )
-                                Column {
-                                    Text(text = it.name)
-//                        Text(text = it.description)
-                                    Text(text = it.language ?: "null")
-//                        Text(text = it.stargazers_count.toString())
-                                }
-                            }
-                        }
+                        Log.d("!!!", it.toString())
 
+//                        Card(Modifier.padding(20.dp)) {
+//                            Row {
+//                                Text(text = (index + 1).toString())
+//                                Image(
+//                                    painter = rememberAsyncImagePainter(it.owner.avatar_url),
+//                                    contentDescription = it.owner.url,
+//                                    modifier = Modifier
+//                                        .size(50.dp)
+//                                        .clip(
+//                                            RoundedCornerShape(
+//                                                if (it.owner.type == "Organization") 15
+//                                                else 100
+//                                            )
+//                                        )
+//                                )
+//                                Column {
+//                                    Text(text = it.name)
+////                        Text(text = it.description)
+//                                    Text(text = it.language ?: "null")
+////                        Text(text = it.stargazers_count.toString())
+//                                }
+//                            }
+//                        }
+
+
+//                        RepoCard(it)
                     }
                 }
 
@@ -288,7 +281,7 @@ fun LazyListScope.displayLoadState(pagingItems: LazyPagingItems<Item>) {
             item { Text(text = "正在请求...") }
         }
         pagingItems.loadState.append is LoadState.Loading -> {
-            item { CircularProgressIndicator(modifier = Modifier.padding(8.dp)) }
+            item { CircularProgressIndicator(modifier = Modifier.fillMaxWidth().padding(8.dp)) }
         }
         pagingItems.loadState.refresh is LoadState.Error -> {
             val errorState = pagingItems.loadState.refresh as LoadState.Error

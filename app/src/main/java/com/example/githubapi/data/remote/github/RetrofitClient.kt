@@ -2,7 +2,10 @@ package com.example.githubapi.data.remote.github
 
 import android.util.Log
 import com.example.githubapi.data.BASE_URL
+import com.example.githubapi.data.remote.github.getrepo.json.GetRepoItem
 import com.example.githubapi.data.remote.github.search.repositories.GitHubRepositories
+import com.example.githubapi.data.remote.github.search.repositories.Owner
+import com.squareup.moshi.Moshi
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -80,6 +83,7 @@ object RetrofitClient {
         return response.body()
     }
 
+
     suspend fun pagingTest(page: Int = 1): Response<GitHubRepositories> =
         apiServiceGson.searchRepositories(query = "Kotlin", page = page)
 
@@ -102,8 +106,20 @@ object RetrofitClient {
         )
 
 
-    fun getUser() {
+    suspend fun getUser(fullName: String): Response<GetRepoItem>{
+        val (owner, repo) = fullName.splitFullName()
+//        return apiServiceMoshi.getRepo(owner, repo)
+        return apiServiceGson.getRepo(owner, repo)
+    }
 
+}
+
+fun String.splitFullName(): Pair<String, String> {
+    val parts = this.split('/')
+    if (parts.size == 2) {
+        return Pair(parts[0], parts[1])
+    } else {
+        throw IllegalArgumentException("Invalid full name format")
     }
 }
 
@@ -111,12 +127,3 @@ enum class ConverterType {
     GSON,
     MOSHI
 }
-
-enum class RepositorySortType {
-    BEST_MATCH,
-    STARS,
-    FORKS,
-    HELP_WANTED_ISSUES,
-    UPDATED
-}
-

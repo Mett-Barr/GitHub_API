@@ -1,4 +1,4 @@
-package com.example.githubapi.data.local.room
+package com.example.githubapi.data.local.room.history
 
 import androidx.lifecycle.LiveData
 import androidx.room.*

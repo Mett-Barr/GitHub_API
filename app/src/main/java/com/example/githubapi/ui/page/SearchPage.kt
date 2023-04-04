@@ -10,26 +10,31 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.githubapi.MainViewModel
+import com.example.githubapi.ui.component.SearchRepoColumn
 import com.example.githubapi.ui.component.SearchBar
-import kotlinx.coroutines.flow.debounce
+import com.example.githubapi.ui.navigation.MainRoute
 
 @Composable
 fun SearchPage(
-    viewModel: MainViewModel = viewModel(),
+    viewModel: MainViewModel = hiltViewModel(),
 ) {
+
+//    viewModel.lastSearch
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
+//            .statusBarsPadding()
     ) {
 
 
         LaunchedEffect(viewModel.isSearchBarExpanded) {
             viewModel.apply {
                 if (!isSearchBarExpanded) {
-                    Log.d("!!!", "queryFlow = ${queryFlow.value}, lastSearch = $lastSearch ")
+//                    Log.d("!!!", "queryFlow = ${queryFlow.value}, lastSearch = $lastSearch ")
                     if (queryFlow.value.isBlank()) {
                         queryFlow.value = lastSearch
                         searchRepo()
@@ -38,29 +43,12 @@ fun SearchPage(
             }
         }
 
-//        LaunchedEffect(searchText) {
-//            viewModel.queryFlow
-//                .debounce(2000L) // 2 seconds debounce
-//                .collect { searchText ->
-//                    viewModel.searchRepo()
-//                    pagingItems.refresh()
-//                }
-//        }
 
-
-        TestPaging(modifier = Modifier)
-
-//        LazyColumn(
-//            contentPadding = PaddingValues(top = 72.dp)
-//        ) {
-//            items(100) {
-//                Spacer(modifier = Modifier
-//                    .padding(10.dp)
-//                    .background(Color.Gray)
-//                    .fillMaxWidth()
-//                    .size(100.dp))
-//            }
-//        }
+        val pagingItems = viewModel.pagingData.collectAsLazyPagingItems()
+        SearchRepoColumn(pagingItems = pagingItems) {
+            viewModel.navigate(MainRoute.Repository(it))
+        }
+//        RepoColumn(viewModel = viewModel)
 
         /** Mask */
 //        val isSearchBarExpanded by viewModel.isSearchBarExpanded
@@ -85,6 +73,11 @@ fun SearchPage(
                     })
         )
 
-        SearchBar(modifier = Modifier.align(Alignment.TopCenter))
+        SearchBar(modifier = Modifier.align(Alignment.TopCenter), viewModel)
     }
+}
+
+@Composable
+fun ViewModelTest(viewModel: MainViewModel = viewModel()) {
+    viewModel
 }

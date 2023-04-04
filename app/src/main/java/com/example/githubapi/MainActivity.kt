@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -23,12 +22,11 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import coil.compose.rememberAsyncImagePainter
-import com.example.githubapi.data.local.room.SearchHistory
-import com.example.githubapi.data.local.room.SearchHistoryDao
+import com.example.githubapi.data.local.room.history.SearchHistory
+import com.example.githubapi.data.local.room.history.SearchHistoryDao
+import com.example.githubapi.data.remote.github.RetrofitClient
 import com.example.githubapi.data.remote.github.search.repositories.Item
-import com.example.githubapi.ui.component.SearchBar
-import com.example.githubapi.ui.page.SearchPage
-import com.example.githubapi.ui.page.TestPaging
+import com.example.githubapi.ui.navigation.MainNavigation
 import com.example.githubapi.ui.theme.MainTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -56,66 +54,29 @@ class MainActivity : AppCompatActivity() {
 //        setContentView(R.layout.activity_main)
 
 
-
-//        roomTest()
-//        testRoomLiveData()
-
+        viewModel
 
         setContent {
-
             MainTheme {
-//                Spacer(modifier = Modifier
-//                    .fillMaxSize()
-//                    .background(Color.Gray))
-//
-//            }
-
-////                Spacer(modifier = Modifier
-////                    .fillMaxSize()
-////                    .background(Color.Gray))
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SearchPage()
+//                    SearchPage()
+                    MainNavigation()
                 }
             }
-//            if (viewModel.isComposeMode) {
-//                TestUI { viewModel.test() }
-//            } else {
-//                AndroidView(
-//                    factory = {
-//                        LayoutInflater.from(it).inflate(R.layout.activity_main, null)
-//                    },
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .clickable { viewModel.test() }
-//                        .background(Color.White)
-//                )
-//            }
-
-//            TestColumn(repo = viewModel.gitRepo)
-
-//            Column {
-//                Switch(
-//                    checked = viewModel.isUsingOauth,
-//                    onCheckedChange = { viewModel.isUsingOauth = !viewModel.isUsingOauth })
-////                Button(onClick = { viewModel.invaTest() }) {
-////                    Text(text = "test")
-////                }
-////                TextField(value = viewModel.searchTextFlow.collectAsState().value, onValueChange =
-////                { textFieldValue ->
-//////                    viewModel.textFieldValue = textFieldValue
-//////                    viewModel.searchRepo()
-////                })
-////                TestPaging()
-//
-//                SearchBar()
-//            }
-
         }
 
         CoroutineScope(Dispatchers.IO).launch {
+
+//            val response = RetrofitClient.getUser("JetBrains/kotlin") // 使用实际的仓库所有者和名称替换 "owner" 和 "repo"
+//            if (response.isSuccessful) {
+//                Log.d("!!!", "成功获取仓库数据: ${response.body()}")
+//            } else {
+//                Log.d("!!!", "获取仓库数据失败: ${response.errorBody()}")
+//            }
+
 //            RetrofitClient.test()
 
 //            val retrofit = Retrofit.Builder()

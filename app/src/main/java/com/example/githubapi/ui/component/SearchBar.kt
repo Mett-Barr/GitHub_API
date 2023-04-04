@@ -1,7 +1,6 @@
 package com.example.githubapi.ui.component
 
 //import androidx.compose.foundation.layout.BoxScopeInstance.matchParentSize
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -40,10 +39,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.githubapi.MainViewModel
 import com.example.githubapi.R
-import com.example.githubapi.data.local.room.SearchHistory
+import com.example.githubapi.data.local.room.history.SearchHistory
 import com.example.githubapi.data.remote.github.Oauth
 import com.example.githubapi.data.remote.github.Order
 import com.example.githubapi.data.remote.github.PerPage
@@ -54,11 +53,11 @@ import kotlinx.coroutines.launch
     ExperimentalLayoutApi::class, ExperimentalFoundationApi::class,
     ExperimentalMaterial3Api::class
 )
-@Preview
+//@Preview
 @Composable
 fun BoxScope.SearchBar(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = hiltViewModel()
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -95,17 +94,7 @@ fun BoxScope.SearchBar(
 
     Column(
         modifier = Modifier
-//            .background(Color.Blue.copy(0.3f))
             .wrapContentWidth()
-//            .clickable {
-//
-//                // test
-////                isAdvancedMenuOpen = !isAdvancedMenuOpen
-//                focusManager.clearFocus()
-//
-//
-//                viewModel.onSearchBarStateChange(false)
-//            }
             .padding(8.dp),
 
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -451,35 +440,12 @@ fun SearchBox(
                 .fillMaxWidth()
                 .height(56.dp)
                 .padding(4.dp),
-//                .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AnimatedVisibility(visible = isSearchBarExpanded) {
-//                IconButton(onClick = {
-//                    onSearchingStateChange(false)
-//                    focusManager.clearFocus()
-//                }) {
-//                    Icon(
-//                        painter = painterResource(id = R.drawable.arrow_back_fill0_wght400_grad0_opsz48),
-//                        contentDescription = "search"
-//                    )
-//                }
                 ClickableIcon(painter = painterResource(id = R.drawable.arrow_back_fill0_wght400_grad0_opsz48)) {
                     onBackClick()
-//                    onSearchingStateChange(false)
-//                    focusManager.clearFocus()
                 }
-//                Icon(
-//                    painter = painterResource(id = R.drawable.arrow_back_fill0_wght400_grad0_opsz48),
-//                    contentDescription = "search",
-//                    modifier = Modifier
-//                        .size(24.dp)
-//                        .clickable {
-//                            onSearchingStateChange(false)
-//                            focusManager.clearFocus()
-//                        }
-//                )
             }
 
             AnimatedVisibility(visible = !isSearchBarExpanded) {
@@ -521,13 +487,6 @@ fun SearchBox(
             AnimatedVisibility(visible = isSearchBarExpanded) {
                 Crossfade(targetState = isAdvancedSearchMenuOpen) { opening ->
                     if (opening) {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.expand_less_fill0_wght400_grad0_opsz48),
-//                            contentDescription = "search",
-//                            modifier = Modifier
-//                                .size(24.dp)
-//                                .clickable { onAdvancedSearchMenuChange(false) })
-
                         ClickableIcon(
                             painter = painterResource(id = R.drawable.expand_less_fill0_wght400_grad0_opsz48),
                             contentDescription = "expand less",
@@ -537,13 +496,6 @@ fun SearchBox(
                             }
                         )
                     } else {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.expand_more_fill0_wght400_grad0_opsz48),
-//                            contentDescription = "search",
-//                            modifier = Modifier
-//                                .size(24.dp)
-//                                .clickable { onAdvancedSearchMenuChange(true) }
-//                        )
                         ClickableIcon(
                             painter = painterResource(id = R.drawable.expand_more_fill0_wght400_grad0_opsz48),
                             contentDescription = "expand more",
