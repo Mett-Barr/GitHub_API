@@ -2,8 +2,12 @@ package com.example.githubapi
 
 import android.content.res.Resources.Theme
 import android.util.Log
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.TextView
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.databinding.BindingAdapter
 import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -63,18 +67,11 @@ class MainViewModel @Inject constructor(
     }
 
     // navigation
-    val route = MutableStateFlow<MainRoute>(MainRoute.Settings)
+    val route = MutableStateFlow<MainRoute>(MainRoute.Search)
 
     fun navigate(route: MainRoute) {
         this.route.value = route
     }
-
-//    fun onSearchBarStateChanged() {
-//        if (!isSearchBarExpanded) {
-//            // 如果 SearchBar 處於關閉狀態，處理 lastSearch
-//            handleLastSearch()
-//        }
-//    }
 
     fun handleLastSearch() {
         if (lastSearch.isNotBlank()) {
@@ -116,19 +113,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    //
-//    fun test() {
-//        viewModelScope.launch {
-//            dataStore.saveComposeMode(!isComposeMode)
-//        }
-//    }
-    fun test() {
-        viewModelScope.launch {
-//            isComposeMode = !isComposeMode
-//            dataStore.saveComposeMode(isComposeMode)
-        }
-    }
-
 
     /** UI Data */
     var gitRepo = mutableStateListOf<Item>()
@@ -141,7 +125,9 @@ class MainViewModel @Inject constructor(
 
     // search param
     val queryFlow = MutableStateFlow("Kotlin")
-    var oauth: MutableLiveData<Oauth> = MutableLiveData(Oauth.UNABLE)
+    val queryFlow2: StateFlow<String> = queryFlow
+
+    var oauth: MutableLiveData<Oauth> = MutableLiveData(Oauth.ENABLE)
         private set
     var sort: MutableLiveData<Sort> = MutableLiveData(Sort.BEST_MATCH)
         private set
@@ -159,7 +145,7 @@ class MainViewModel @Inject constructor(
     ) {
 
         if (queryFlow.value.isNotBlank()) {
-//            Log.d("!!!", "searchRepo: text = ${queryFlow.value}")
+            Log.d("!!!", "searchRepo: text = ${queryFlow.value}")
 
             pagingData = Pager(
                 config = PagingConfig(pageSize = perPage.value?.getValue() ?: 30),
@@ -367,9 +353,22 @@ class MainViewModel @Inject constructor(
 //    suspend fun getBookmarkByUrl(url: String) = bookmarkDao.getBookmarkByUrl(url)
 
 
-    init {
 
-    }
+    // XML
+
+//    val editorActionListener: TextView.OnEditorActionListener =
+//        TextView.OnEditorActionListener { _, actionId, _ ->
+//            searchRepo()
+//            actionId == EditorInfo.IME_ACTION_SEARCH
+//        }
+//
+//    companion object {
+//
+//        @BindingAdapter("onEditorActionListener")
+//        fun bindOnEditorActionListener(editText: EditText, editorActionListener: TextView.OnEditorActionListener) {
+//            editText.setOnEditorActionListener(editorActionListener)
+//        }
+//    }
 }
 
 enum class ThemeMode{

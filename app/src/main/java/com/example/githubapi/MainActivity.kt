@@ -1,7 +1,17 @@
 package com.example.githubapi
 
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.Context
+import android.content.DialogInterface
+import android.content.res.Configuration
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.ImageView
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,21 +28,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import coil.compose.rememberAsyncImagePainter
 import com.example.githubapi.data.local.room.history.SearchHistory
 import com.example.githubapi.data.local.room.history.SearchHistoryDao
 import com.example.githubapi.data.remote.github.RetrofitClient
 import com.example.githubapi.data.remote.github.search.repositories.Item
+import com.example.githubapi.databinding.ActivityMainBinding
 import com.example.githubapi.ui.navigation.MainNavigation
 import com.example.githubapi.ui.theme.MainTheme
+import com.example.githubapi.ui.xml.MyAdapter
+import com.example.githubapi.ui.xml.MyPagingAdapter
+import com.example.githubapi.ui.xml.PostsLoadStateAdapter
+import com.google.android.material.search.SearchView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,30 +62,83 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var searchHistoryDao: SearchHistoryDao
 
+    private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
+
+    private val repoAdapter = MyPagingAdapter()
+
+
+    private var isFirstLaunch = true
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-//        setContentView(R.layout.activity_main)
+//        WindowCompat.setDecorFitsSystemWindows(window, false)
 
 
-        viewModel
+        val isComposeMode = viewModel.isComposeMode.value
+//        if (false) {
+        if (isComposeMode == true) {
 
-        setContent {
-            MainTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+            setContent {
+                WindowCompat.setDecorFitsSystemWindows(window, false)
+
+//            AndroidView(modifier = Modifier.fillMaxSize(), factory = {
+//                val view = LayoutInflater.from(it).inflate(R.layout.activity_main, null, false)
+//                val rv = view.findViewById<RecyclerView>(R.id.rv)
+//                rv.layoutManager = LinearLayoutManager(it)
+//                rv.adapter = repoAdapter
+//
+//                lifecycleScope.launch {
+//                    viewModel.pagingData.collect { pagingData ->
+//                        repoAdapter.submitData(pagingData)
+//                    }
+//                }
+//
+//                view
+//            })
+
+
+                MainTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
 //                    SearchPage()
-                    MainNavigation()
+                        MainNavigation()
+                    }
                 }
             }
+        } else {
+
+            setContentView(R.layout.activity_main)
+
+            binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+            binding.viewModel = viewModel
+            binding.lifecycleOwner = this
+
+//            val rv = findViewById<RecyclerView>(R.id.rv)
+//            rv.layoutManager = LinearLayoutManager(this)
+//            rv.adapter = repoAdapter
+
+            initUI()
+
+            lifecycleScope.launch {
+                viewModel.pagingData.collect { pagingData ->
+                    repoAdapter.submitData(pagingData)
+                }
+            }
+
         }
+
+        viewModel.isComposeMode.observe(this) {
+            if (!isFirstLaunch) this.recreate()
+            isFirstLaunch = false
+        }
+
+
+
 
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -107,22 +179,88 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun initUI() {
+        val rv = findViewById<RecyclerView>(R.id.rv)
+        rv.layoutManager = LinearLayoutManager(this)
+        rv.adapter = repoAdapter.withLoadStateHeaderAndFooter(
+            header = PostsLoadStateAdapter(),
+            footer = PostsLoadStateAdapter()
+        )
+
+        val editText = findViewById<EditText>(R.id.edit_text)
+        editText.setOnEditorActionListener { v, actionId, event ->
+            viewModel.searchRepo()
+            repoAdapter.refresh()
+            true
+//            if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                return@setOnEditorActionListener true
+//            }
+//            false
+        }
+
+
+        val imageView = findViewById<ImageView>(R.id.imageView)
+        imageView.also {
+            if (isDarkThemeOn()) {
+                it.setColorFilter(ContextCompat.getColor(this, R.color.white))
+            } else {
+                it.setColorFilter(ContextCompat.getColor(this, R.color.black))
+            }
+
+            it.setOnClickListener {
+                val dialog = AlertDialog.Builder(this)
+                dialog.apply {
+//                    setView(layoutInflater.inflate(R.layout.dialog, null))
+                    setMessage("Switch to Compose Mode")
+                    setPositiveButton("Switch", DialogInterface.OnClickListener { _, _ ->
+                        viewModel.onComposeModeChange(true)
+                    })
+                    setNegativeButton("Cancel", DialogInterface.OnClickListener { _, _ ->
+
+                    })
+                }
+                dialog.create().show()
+            }
+        }
+
+
+//        lifecycleScope.launch(Dispatchers.Default) {
+//            viewModel.queryFlow.collect {
+//                viewModel.searchRepo()
+//                delay(2000)
+//                withContext(Dispatchers.Main) {
+//                    repoAdapter.retry()
+//                    Log.d("!!!", "repoAdapter.retry")
+//                }
+//            }
+//        }
+        viewModel.queryFlow.asLiveData().observe(this) {
+            viewModel.searchRepo()
+            repoAdapter.refresh()
+        }
+    }
+
 
     // testing
     private fun LifecycleOwner.roomTest() {
         // 使用协程在后台线程执行数据库操作
         lifecycleScope.launch {
             // 插入一个新的搜索历史记录
-            val searchHistory = SearchHistory(searchTerm = "test search", lastUsed = System.currentTimeMillis())
+            val searchHistory =
+                SearchHistory(searchTerm = "test search", lastUsed = System.currentTimeMillis())
             searchHistoryDao.insert(searchHistory)
 
             // 获取所有搜索历史记录
             val searchHistories = searchHistoryDao.getAll()
             searchHistories.forEach { history ->
-                Log.d("room","Search history: ${history.searchTerm}, Last used: ${history.lastUsed}")
+                Log.d(
+                    "room",
+                    "Search history: ${history.searchTerm}, Last used: ${history.lastUsed}"
+                )
             }
         }
     }
+
     private fun testRoomLiveData() {
         lifecycleScope.launch {
             // 插入示例数据
@@ -159,6 +297,7 @@ class MainActivity : AppCompatActivity() {
             printSearchHistories()
         }
     }
+
     private suspend fun printSearchHistories() {
         val searchHistories = viewModel.getAllSearchHistories()
         Log.d("RoomLiveDataTest", "Search histories changed:")
@@ -239,3 +378,8 @@ fun TestColumn(repo: List<Item>) {
 //        }
 //    }
 //}
+
+fun Context.isDarkThemeOn(): Boolean {
+    return resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
+}

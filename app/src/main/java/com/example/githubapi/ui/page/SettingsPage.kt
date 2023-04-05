@@ -23,7 +23,7 @@ fun SettingsPage(viewModel: MainViewModel = hiltViewModel()) {
 //    LaunchedEffect(key1 = , block = )
 
     var showDialog by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     Column(

@@ -51,7 +51,7 @@ fun MainNavigation(
     val route by viewModel.route.collectAsState()
 
     var backRoute by remember {
-        mutableStateOf(MainRoute.Search)
+        mutableStateOf<MainRoute>(MainRoute.Search)
     }
 
     var url by remember {
@@ -109,80 +109,177 @@ fun MainNavigation(
 //                Icon(painter = painterResource(id = R.drawable.settings_black_24dp), contentDescription = "settings", modifier = Modifier.clickable {  })
 //            }
 
-//            AnimatedVisibility(visible = route !is MainRoute.Repository) {
-//            }
             Surface(
                 modifier = Modifier
                     .wrapContentSize()
                     .animateContentSize { _, _ -> },
                 color = MaterialTheme.colorScheme.background
             ) {
-                AnimatedContent(targetState = route !is MainRoute.Repository,
-                    transitionSpec = {
-                        fadeIn() with fadeOut()
-                    }) {
-                    if (it) {
-                        NavigationBar(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            modifier = Modifier
-                                .background(MaterialTheme.colorScheme.background)
-                                .fillMaxWidth()
-                        ) {
-                            NavigationBarItem(selected = route == MainRoute.Search,
-                                onClick = { viewModel.navigate(MainRoute.Search) },
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.search_fill0_wght400_grad0_opsz48),
-                                        contentDescription = "search page",
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                },
-                                label = { Text(text = MainRoute.Search.route) }
-                            )
-                            NavigationBarItem(selected = route == MainRoute.BookMarks,
-                                onClick = { viewModel.navigate(MainRoute.BookMarks) },
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.bookmark_black_24dp),
-                                        contentDescription = "bookmarks",
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                },
-                                label = { Text(text = MainRoute.BookMarks.route) }
-                            )
-                            NavigationBarItem(selected = route == MainRoute.Settings,
-                                onClick = { viewModel.navigate(MainRoute.Settings) },
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.settings_black_24dp),
-                                        contentDescription = "settings",
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                },
-                                label = { Text(text = MainRoute.Settings.route) }
-                            )
-                        }
-                    } else {
-                        BottomAppBar(
-                            modifier = Modifier
-                                .background(MaterialTheme.colorScheme.background)
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                            containerColor = MaterialTheme.colorScheme.background
-                        ) {
-                            Icon(painter = painterResource(id = R.drawable.cancel_black_24dp), contentDescription = "")
-                        }
+                if (route !is MainRoute.Repository) {
+                    NavigationBar(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.background)
+                            .fillMaxWidth()
+                    ) {
+                        NavigationBarItem(selected = route == MainRoute.Search,
+                            onClick = { viewModel.navigate(MainRoute.Search) },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.search_fill0_wght400_grad0_opsz48),
+                                    contentDescription = "search page",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            label = { Text(text = MainRoute.Search.route) }
+                        )
+                        NavigationBarItem(selected = route == MainRoute.BookMarks,
+                            onClick = { viewModel.navigate(MainRoute.BookMarks) },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.bookmark_black_24dp),
+                                    contentDescription = "bookmarks",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            label = { Text(text = MainRoute.BookMarks.route) }
+                        )
+                        NavigationBarItem(selected = route == MainRoute.Settings,
+                            onClick = { viewModel.navigate(MainRoute.Settings) },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.settings_black_24dp),
+                                    contentDescription = "settings",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            label = { Text(text = MainRoute.Settings.route) }
+                        )
                     }
+
                 }
+//                AnimatedVisibility(visible = route !is MainRoute.Repository,
+//                    enter = slideInVertically { -it },
+//                    exit = slideOutVertically { it }
+////                        fadeIn() with fadeOut()
+//                ) {
+//                    NavigationBar(
+//                        containerColor = MaterialTheme.colorScheme.background,
+//                        modifier = Modifier
+//                            .background(MaterialTheme.colorScheme.background)
+//                            .fillMaxWidth()
+//                    ) {
+//                        NavigationBarItem(selected = route == MainRoute.Search,
+//                            onClick = { viewModel.navigate(MainRoute.Search) },
+//                            icon = {
+//                                Icon(
+//                                    painter = painterResource(id = R.drawable.search_fill0_wght400_grad0_opsz48),
+//                                    contentDescription = "search page",
+//                                    modifier = Modifier.size(24.dp)
+//                                )
+//                            },
+//                            label = { Text(text = MainRoute.Search.route) }
+//                        )
+//                        NavigationBarItem(selected = route == MainRoute.BookMarks,
+//                            onClick = { viewModel.navigate(MainRoute.BookMarks) },
+//                            icon = {
+//                                Icon(
+//                                    painter = painterResource(id = R.drawable.bookmark_black_24dp),
+//                                    contentDescription = "bookmarks",
+//                                    modifier = Modifier.size(24.dp)
+//                                )
+//                            },
+//                            label = { Text(text = MainRoute.BookMarks.route) }
+//                        )
+//                        NavigationBarItem(selected = route == MainRoute.Settings,
+//                            onClick = { viewModel.navigate(MainRoute.Settings) },
+//                            icon = {
+//                                Icon(
+//                                    painter = painterResource(id = R.drawable.settings_black_24dp),
+//                                    contentDescription = "settings",
+//                                    modifier = Modifier.size(24.dp)
+//                                )
+//                            },
+//                            label = { Text(text = MainRoute.Settings.route) }
+//                        )
+//                    }
+//                }
+                
+//                AnimatedContent(targetState = route !is MainRoute.Repository,
+//                    transitionSpec = {
+//                        fadeIn() with fadeOut()
+//                    }) {
+//                    if (it) {
+//                        NavigationBar(
+//                            containerColor = MaterialTheme.colorScheme.background,
+//                            modifier = Modifier
+//                                .background(MaterialTheme.colorScheme.background)
+//                                .fillMaxWidth()
+//                        ) {
+//                            NavigationBarItem(selected = route == MainRoute.Search,
+//                                onClick = { viewModel.navigate(MainRoute.Search) },
+//                                icon = {
+//                                    Icon(
+//                                        painter = painterResource(id = R.drawable.search_fill0_wght400_grad0_opsz48),
+//                                        contentDescription = "search page",
+//                                        modifier = Modifier.size(24.dp)
+//                                    )
+//                                },
+//                                label = { Text(text = MainRoute.Search.route) }
+//                            )
+//                            NavigationBarItem(selected = route == MainRoute.BookMarks,
+//                                onClick = { viewModel.navigate(MainRoute.BookMarks) },
+//                                icon = {
+//                                    Icon(
+//                                        painter = painterResource(id = R.drawable.bookmark_black_24dp),
+//                                        contentDescription = "bookmarks",
+//                                        modifier = Modifier.size(24.dp)
+//                                    )
+//                                },
+//                                label = { Text(text = MainRoute.BookMarks.route) }
+//                            )
+//                            NavigationBarItem(selected = route == MainRoute.Settings,
+//                                onClick = { viewModel.navigate(MainRoute.Settings) },
+//                                icon = {
+//                                    Icon(
+//                                        painter = painterResource(id = R.drawable.settings_black_24dp),
+//                                        contentDescription = "settings",
+//                                        modifier = Modifier.size(24.dp)
+//                                    )
+//                                },
+//                                label = { Text(text = MainRoute.Settings.route) }
+//                            )
+//                        }
+//                    } else {
+//                        BottomAppBar(
+//                            modifier = Modifier
+//                                .background(MaterialTheme.colorScheme.background)
+//                                .fillMaxWidth()
+//                                .wrapContentHeight(),
+//                            containerColor = MaterialTheme.colorScheme.background
+//                        ) {
+//                            Icon(
+//                                painter = painterResource(id = R.drawable.cancel_black_24dp),
+//                                contentDescription = ""
+//                            )
+//                        }
+//                    }
+//                }
             }
         }
     ) { padding ->
 
 
         AnimatedContent(targetState = route, modifier = Modifier.padding(padding)) {
-            when(it) {
-                MainRoute.Search -> SearchPage()
-                MainRoute.BookMarks -> BookmarkPage()
+            when (it) {
+                MainRoute.Search -> {
+                    backRoute = it
+                    SearchPage()
+                }
+                MainRoute.BookMarks -> {
+                    backRoute = it
+                    BookmarkPage()
+                }
                 MainRoute.Settings -> SettingsPage()
                 is MainRoute.Repository -> RepositoryPage(url = it.url) {
                     viewModel.route.value = backRoute

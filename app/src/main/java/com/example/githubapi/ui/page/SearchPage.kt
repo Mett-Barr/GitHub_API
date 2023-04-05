@@ -76,8 +76,3 @@ fun SearchPage(
         SearchBar(modifier = Modifier.align(Alignment.TopCenter), viewModel)
     }
 }
-
-@Composable
-fun ViewModelTest(viewModel: MainViewModel = viewModel()) {
-    viewModel
-}
