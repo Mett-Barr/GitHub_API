@@ -127,7 +127,7 @@ class MainViewModel @Inject constructor(
     val queryFlow = MutableStateFlow("Kotlin")
     val queryFlow2: StateFlow<String> = queryFlow
 
-    var oauth: MutableLiveData<Oauth> = MutableLiveData(Oauth.ENABLE)
+    var oauth: MutableLiveData<Oauth> = MutableLiveData(Oauth.UNABLE)
         private set
     var sort: MutableLiveData<Sort> = MutableLiveData(Sort.BEST_MATCH)
         private set
