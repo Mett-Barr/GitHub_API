@@ -48,6 +48,12 @@ android {
     dataBinding {
         enabled true
     }
+
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+        freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"] // 啟用 Kotlin 實驗性 API
+    }
 }
 
 dependencies {

@@ -5,6 +5,9 @@ import com.example.githubapi.data.BASE_URL
 import com.example.githubapi.data.remote.github.getrepo.json.GetRepoItem
 import com.example.githubapi.data.remote.github.search.repositories.GitHubRepositories
 import com.example.githubapi.data.remote.github.search.repositories.Owner
+import com.example.githubapi.data.t1
+import com.example.githubapi.data.t2
+import com.example.githubapi.data.t3
 import com.squareup.moshi.Moshi
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -97,7 +100,7 @@ object RetrofitClient {
         page: Int? = null
     ) =
         apiServiceGson.searchRepositories(
-            authHeader = if (isOauthEnabled == true) "Bearer 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" else null,
+            authHeader = if (isOauthEnabled == true) "Bearer $t1$t2$t3" else null,
 //            authHeader = if (isOauthEnabled == true) "Bearer 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" else null,
             query = query,
             sort = sort,

@@ -2,6 +2,7 @@ package com.example.githubapi.ui.component
 
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -87,6 +88,7 @@ fun RepoCard(
                                     .wrapContentHeight()
                                     .weight(1f)
                             )
+                            @OptIn(ExperimentalAnimationApi::class)
                             AnimatedContent(targetState = isBookmarkExist) {
                                 if (it) {
                                     ClickableIcon(painter = painterResource(id = R.drawable.bookmark_black_24dp)) { onBookmarkChange() }
@@ -191,6 +193,7 @@ fun RepoCard(
                                     .wrapContentHeight()
                                     .weight(1f)
                             )
+                            @OptIn(ExperimentalAnimationApi::class)
                             AnimatedContent(targetState = isBookmarkExist) {
                                 if (it) {
                                     ClickableIcon(painter = painterResource(id = R.drawable.bookmark_black_24dp)) { onBookmarkChange() }

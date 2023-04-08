@@ -269,7 +269,7 @@ fun MainNavigation(
         }
     ) { padding ->
 
-
+        @OptIn(ExperimentalAnimationApi::class)
         AnimatedContent(targetState = route, modifier = Modifier.padding(padding)) {
             when (it) {
                 MainRoute.Search -> {
